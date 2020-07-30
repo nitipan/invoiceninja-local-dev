@@ -1,0 +1,60 @@
+version: '3.7'
+
+services:
+  server:
+    image: caddy:alpine
+    restart: always
+    environment:
+      - APP_URL=https://localhost
+    volumes:
+      - ./dockerfiles/config/caddy/Caddyfile:/etc/caddy/Caddyfile
+      # you may use a bind-mounted host directory instead, so that it is harder to accidentally remove the volume and lose all your data!
+      - ./src/public:/var/www/app/public:rw,delegated
+      - ./src/storage:/var/www/app/storage:rw,delegated
+    depends_on:
+      - app
+    # # Run webserver nginx on port 80
+    # # Feel free to modify depending what port is already occupied
+    ports:
+      - '80:80'
+      - '443:443'
+
+  app:
+    build:
+      context: ./dockerfiles
+      dockerfile: ./alpine/Dockerfile
+      args:
+        INVOICENINJA_VERSION: 4.5.18
+    # restart: always
+    environment:
+      - APP_URL=https://localhost
+      - APP_KEY=base64:V9Qcjaui9DS7s/IaSzr/tVGFR7jm0zJrlILNKi1qqs4=
+      - DB_HOST=db
+      - DB_USERNAME=ninja
+      - DB_PASSWORD=ninja
+      - DB_DATABASE=ninja
+      - LOG=single
+    # entrypoint: composer install --no-scripts
+    volumes:
+      # - ./src/app/public:/var/www/app/public:rw,delegated
+      # - ./src/app/storage:/var/www/app/storage:rw,delegated
+      - ./src:/var/www/app
+    depends_on:
+      - db
+  db:
+    image: mysql:5
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=ninjaAdm1nPassword
+      - MYSQL_USER=ninja
+      - MYSQL_PASSWORD=ninja
+      - MYSQL_DATABASE=ninja
+    volumes:
+      - ./tmp/mysql/data:/var/lib/mysql:rw,delegated
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    environment:
+      - PMA_HOST=db
+    ports:
+      - 8101:80

@@ -21,7 +21,8 @@ RUN set -eux; \
     libjpeg-turbo-dev \
     libpng-dev \
     libwebp-dev\ 
-    libzip-dev
+    libzip-dev \ 
+    autoconf g++ alpine-sdk
 
 RUN docker-php-ext-configure gd --with-jpeg-dir=/usr/include/ --with-png-dir=/usr/include --with-webp-dir=/usr/include --with-freetype-dir=/usr/include/; \
     docker-php-ext-configure zip --with-libzip; \
@@ -37,6 +38,13 @@ RUN docker-php-ext-configure gd --with-jpeg-dir=/usr/include/ --with-png-dir=/us
 
 COPY ./config/php/php.ini /usr/local/etc/php/php.ini
 COPY ./config/php/php-cli.ini /usr/local/etc/php/php-cli.ini
+
+RUN pecl install xdebug \
+    && docker-php-ext-enable xdebug \ 
+    && echo "xdebug.remote_enable=1" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
+    && echo "xdebug.remote_autostart=1" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini 
+
+
 
 # Install Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer

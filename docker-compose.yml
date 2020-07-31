@@ -27,14 +27,14 @@ services:
         INVOICENINJA_VERSION: 4.5.18
     # restart: always
     environment:
-      - APP_URL=https://localhost
-      - APP_KEY=base64:V9Qcjaui9DS7s/IaSzr/tVGFR7jm0zJrlILNKi1qqs4=
-      - DB_HOST=db
-      - DB_USERNAME=ninja
-      - DB_PASSWORD=ninja
-      - DB_DATABASE=ninja
-      - LOG=single
-      - XDEBUG_CONFIG=remote_host=host.docker.internal remote_port=9000 remote_enable=1
+      APP_URL: https://localhost
+      APP_KEY: 'base64:V9Qcjaui9DS7s/IaSzr/tVGFR7jm0zJrlILNKi1qqs4='
+      DB_HOST: db
+      DB_USERNAME: ninja
+      DB_PASSWORD: ninja
+      DB_DATABASE: ninja
+      LOG: single
+      XDEBUG_CONFIG: remote_host=host.docker.internal remote_port=9000 remote_enable=1
     # entrypoint: composer install --no-scripts
     volumes:
       # - ./src/app/public:/var/www/app/public:rw,delegated
